@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using CustomPizzaApi.Models;
 using CustomPizzaApi.Data.Dtos;
+using CustomPizzaApi.Data;
 using MapsterMapper;
 
 namespace CustomPizzaApi.Controllers;
@@ -22,7 +23,7 @@ public class PizzasController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Pizza>>> GetPizzas()
     {
-        return await _context.Pizzas.ToListAsync();
+        return await _context.Pizzas.Include(p => p.Ingredients).ToListAsync();
     }
 
     [HttpGet("{id}")]
@@ -63,6 +64,26 @@ public class PizzasController : ControllerBase
         _context.Pizzas.Remove(pizza);
 
         await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpPut("addIngredientToPizza/{id}")]
+    public async Task<IActionResult> AddIngredient(int id, [FromQuery(Name = "i")] int[] ingredientsIds)
+    {
+        var pizza = await FindPizzaAsync(id);
+        if (pizza == null) return NotFound();
+
+        Ingredient? ingr;
+
+        foreach (var ingredientId in ingredientsIds)
+        {
+            ingr = await _context.Ingredients.FirstOrDefaultAsync(i => i.Id == ingredientId);
+            if (ingr == null)
+                return NotFound(new { ingrId = ingredientId });
+
+            _context.IngredientInPizza.Add(new IngredientInPizza { IngredientId = ingredientId, PizzaId = id });
+        }
 
         return NoContent();
     }

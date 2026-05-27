@@ -1,15 +1,11 @@
-using System.ComponentModel.DataAnnotations;
+using CustomPizzaApi.Models;
 
-namespace CustomPizzaApi.Models;
+namespace CustomPizzaApi.Data.Dtos;
 
-public class Ingredient
+public class ReadIngredientDto
 {
     public int Id { get; set; }
-
-    [Required]
     public string? Name { get; set; }
-    [Required]
     public decimal Price { get; set; }
     public ICollection<IngredientInPizza>? Pizzas { get; set; }
 }
-

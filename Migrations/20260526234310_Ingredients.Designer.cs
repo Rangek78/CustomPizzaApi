@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CustomPizzaApi.Migrations
 {
     [DbContext(typeof(PizzaContext))]
-    [Migration("20260524211755_Pizzas and Ingredients")]
-    partial class PizzasandIngredients
+    [Migration("20260526234310_Ingredients")]
+    partial class Ingredients
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

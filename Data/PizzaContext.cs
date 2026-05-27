@@ -27,6 +27,6 @@ public class PizzaContext : DbContext
 
     public DbSet<Pizza> Pizzas { get; set; } = null!;
     public DbSet<Ingredient> Ingredients { get; set; } = null!;
-    public DbSet<Ingredient> IngredientInPizza { get; set; } = null!;
+    public DbSet<IngredientInPizza> IngredientInPizza { get; set; } = null!;
 }
 

@@ -1,4 +1,4 @@
-using CustomPizzaApi.Models;
+using CustomPizzaApi.Data;
 using CustomPizzaApi.MappingProfiles;
 using Mapster;
 using System.Text.Json.Serialization;
@@ -15,6 +15,7 @@ builder.Services.AddDbContext<PizzaContext>(options =>
 builder.Services.AddMapster();
 builder.Services.RegisterMappings();
 
+// Lets enum value be converted to a string during JSON serialization
 builder.Services.AddControllers()
 .AddJsonOptions(opt=> { opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
