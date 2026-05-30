@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CustomPizzaApi.Data.Dtos;
+namespace CustomPizzaApi.Data.Dtos.Ingredient;
 
 public class UpdateIngredientDto
 {

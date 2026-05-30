@@ -10,6 +10,6 @@ public class Ingredient
     public string? Name { get; set; }
     [Required]
     public decimal Price { get; set; }
-    public ICollection<IngredientInPizza>? Pizzas { get; set; }
+    public ICollection<IngredientInPizza> Pizzas { get; set; } = [];
 }
 

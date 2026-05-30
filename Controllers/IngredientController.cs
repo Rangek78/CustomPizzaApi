@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using CustomPizzaApi.Models;
-using CustomPizzaApi.Data.Dtos;
 using CustomPizzaApi.Data;
 using MapsterMapper;
 
@@ -21,9 +20,10 @@ public class IngredientsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Ingredient>>> GetIngredients()
+    public async Task<ActionResult<IEnumerable<Data.Dtos.Ingredient.ReadIngredientDto>>> GetIngredients()
     {
-        return await _context.Ingredients.ToListAsync();
+        var ingredients = await _context.Ingredients.Include(i => i.Pizzas).ToListAsync();
+        return Ok(_mapper.Map<List<Data.Dtos.Ingredient.ReadIngredientDto>>(ingredients));
     }
 
     [HttpGet("{id}")]
@@ -32,7 +32,7 @@ public class IngredientsController : ControllerBase
         var ingredient = await FindIngredientAsync(id);
         if (ingredient == null) return NotFound();
 
-        return Ok(_mapper.Map<ReadIngredientDto>(ingredient));
+        return Ok(_mapper.Map<Data.Dtos.Ingredient.ReadIngredientDto>(ingredient));
     }
 
     [HttpPost]
@@ -45,7 +45,7 @@ public class IngredientsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutIngredient(int id, UpdateIngredientDto ingredientDto)
+    public async Task<IActionResult> PutIngredient(int id, Data.Dtos.Ingredient.UpdateIngredientDto ingredientDto)
     {
         var ingredient = await FindIngredientAsync(id);
         if (ingredient == null) return NotFound();
@@ -70,7 +70,7 @@ public class IngredientsController : ControllerBase
 
     private async Task<Ingredient?> FindIngredientAsync(int id)
     {
-        return await _context.Ingredients.FirstOrDefaultAsync(p => p.Id == id);
+        return await _context.Ingredients.Include(i => i.Pizzas).FirstOrDefaultAsync(p => p.Id == id);
     }
 
 }

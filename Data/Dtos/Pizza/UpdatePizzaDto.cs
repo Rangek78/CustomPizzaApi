@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using CustomPizzaApi.Models;
 
-namespace CustomPizzaApi.Data.Dtos;
+namespace CustomPizzaApi.Data.Dtos.Pizza;
 
 public class UpdatePizzaDto
 {

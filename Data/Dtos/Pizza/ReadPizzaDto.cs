@@ -1,6 +1,6 @@
 using CustomPizzaApi.Models;
 
-namespace CustomPizzaApi.Data.Dtos;
+namespace CustomPizzaApi.Data.Dtos.Pizza;
 
 public class ReadPizzaDto
 {
@@ -8,5 +8,6 @@ public class ReadPizzaDto
     public string? Name { get; set; }
     public PizzaSize Size { get; set; }
     public int SizeId { get; set; }
-    public ICollection<IngredientInPizza>? Ingredients { get; set; }
+    public ICollection<ReadPizzaIngredientsDto>? Ingredients { get; set; }
 }
+
