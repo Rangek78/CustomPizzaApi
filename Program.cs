@@ -10,13 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration["ConnectionStrings:PizzaConnection"];
 
-builder.Services.AddDbContext<PizzaContext>(options =>
-        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)),
-        ServiceLifetime.Transient);
-// builder.Services.AddDbContext<PizzaContext>(options =>
-//        options.UseSqlite(builder.Configuration["ConnectionStrings:SQLiteDefault"]),
-//        ServiceLifetime.Scoped);
-
+builder.AddDbContextService();
 builder.Services.AddMapster();
 builder.Services.RegisterMappings();
 
