@@ -66,6 +66,8 @@ project.fragment.lock.json
 artifacts/
 appsettings.Development.json
 DbExtension.cs
+*.db
+Migrations
 
 # Tye
 .tye/
