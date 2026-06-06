@@ -10,7 +10,7 @@ public class Pizza
     public string? Name { get; set; }
     [Required]
     public PizzaSize Size { get; set; }
-    public ICollection<IngredientInPizza> Ingredients { get; set; } = [];
+    public ICollection<JunctionTable> Ingredients { get; set; } = [];
 }
 
 public enum PizzaSize {

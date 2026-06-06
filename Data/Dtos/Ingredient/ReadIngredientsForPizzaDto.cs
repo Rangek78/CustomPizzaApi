@@ -1,6 +1,6 @@
-namespace CustomPizzaApi.Data.Dtos.Pizza;
+namespace CustomPizzaApi.Data.Dtos.Ingredient;
 
-public class ReadPizzaIngredientsDto
+public class ReadIngredientsForPizzaDto
 {
     public int Id { get; set; }
     public string? Name { get; set; }

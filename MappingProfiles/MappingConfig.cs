@@ -15,10 +15,9 @@ public static class MappingConfig
         globalConfig.NewConfig<Pizza, ReadPizzaDto>()
             .Map(readDto => readDto.SizeId, pizza => (int) pizza.Size)
             .Map(readDto => readDto.Ingredients, pizza => pizza.Ingredients.Select(i => i.Ingredient).ToList());
-            // .Map(readDto => readDto.IngredientsNames, pizza => pizza.Ingredients!.Select(i => i.Ingredient.Name).ToList());
 
         globalConfig.NewConfig<Ingredient, ReadIngredientDto>()
-            .Map(readDto => readDto.Pizzas, ingredient => ingredient.Pizzas);
+            .Map(readDto => readDto.Pizzas, ingredient => ingredient.Pizzas.Select(i => i.Pizza).ToList());
     }
 }
 

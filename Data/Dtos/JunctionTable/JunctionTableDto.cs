@@ -1,6 +1,6 @@
-namespace CustomPizzaApi.Data.Dtos.Ingredient;
+namespace CustomPizzaApi.Data.Dtos.JunctionTable;
 
-public class ReadIngredientInPizzaDto
+public class JunctionTableDto
 {
     public int? PizzaId { get; set; }
     public int? IngredientId { get; set; }
