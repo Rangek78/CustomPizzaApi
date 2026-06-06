@@ -22,7 +22,7 @@ public class IngredientsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Data.Dtos.Ingredient.ReadIngredientDto>>> GetIngredients()
     {
-        var ingredients = await _context.Ingredients.Include(i => i.Pizzas).ToListAsync();
+        var ingredients = await _context.Ingredients.Include(i => i.Pizzas).ThenInclude(p => p.Pizza).ToListAsync();
         return Ok(_mapper.Map<List<Data.Dtos.Ingredient.ReadIngredientDto>>(ingredients));
     }
 
@@ -70,7 +70,7 @@ public class IngredientsController : ControllerBase
 
     private async Task<Ingredient?> FindIngredientAsync(int id)
     {
-        return await _context.Ingredients.Include(i => i.Pizzas).FirstOrDefaultAsync(p => p.Id == id);
+        return await _context.Ingredients.Include(i => i.Pizzas).ThenInclude(p => p.Pizza).FirstOrDefaultAsync(p => p.Id == id);
     }
 
 }

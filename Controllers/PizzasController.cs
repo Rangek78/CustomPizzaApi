@@ -84,7 +84,7 @@ public class PizzasController : ControllerBase
 
             try
             {
-                _context.IngredientInPizza.Add(new IngredientInPizza { IngredientId = ingredientId, PizzaId = id });
+                _context.IngredientInPizza.Add(new JunctionTable { IngredientId = ingredientId, PizzaId = id });
             }
             catch (InvalidOperationException)
             {
