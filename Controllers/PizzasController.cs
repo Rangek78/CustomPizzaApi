@@ -67,35 +67,6 @@ public class PizzasController : ControllerBase
         return NoContent();
     }
 
-
-    [HttpPut("{id}/addIngredient")]
-    public async Task<IActionResult> AddIngredient(int id, [FromBody] IEnumerable<int> ingredientsIds)
-    {
-        var pizza = await FindPizzaAsync(id);
-        if (pizza == null) return NotFound();
-
-        Ingredient? ingr;
-
-        foreach (var ingredientId in ingredientsIds)
-        {
-            ingr = await _context.Ingredients.FirstOrDefaultAsync(i => i.Id == ingredientId);
-            if (ingr == null)
-                return NotFound(new { ingredientId = ingredientId });
-
-            try
-            {
-                _context.IngredientInPizza.Add(new JunctionTable { IngredientId = ingredientId, PizzaId = id });
-            }
-            catch (InvalidOperationException)
-            {
-                return BadRequest(new { ingredientId = ingredientId });
-            }
-        }
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
     private async Task<Pizza?> FindPizzaAsync(int id)
     {
         return await _context.Pizzas.Include(p => p.Ingredients).ThenInclude(i => i.Ingredient).FirstOrDefaultAsync(p => p.Id == id);
