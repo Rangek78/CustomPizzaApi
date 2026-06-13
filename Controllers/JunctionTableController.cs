@@ -85,7 +85,11 @@ public class JunctionTableController : ControllerBase
             return NotFound(notFound);
 
         try { await _context.SaveChangesAsync(); }
-        catch (DbUpdateException ex) { return Conflict(ex.Entries); }  // Appropriate HTTP response
+        catch (DbUpdateException ex)
+        {
+            var conflicts = ex.Entries.Select(e => (JunctionTable)e.Entity).Select(j => j.IngredientId).ToList();
+            return Conflict(conflicts);
+        }
 
         return NoContent();
     }
