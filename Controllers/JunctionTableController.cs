@@ -7,7 +7,7 @@ using MapsterMapper;
 namespace CustomPizzaApi.Controllers;
 
 [ApiController]
-[Route($"api/[controller]")]
+[Route("api/[controller]")]
 public class JunctionTableController : ControllerBase
 {
     private readonly PizzaContext _context;
@@ -53,7 +53,7 @@ public class JunctionTableController : ControllerBase
     }
 
     [HttpPut("{pizzaId}/{ingredientId}")]
-    public async Task<IActionResult> UpdateIngredientInPizza(int pizzaId, int ingredientId, Data.Dtos.JunctionTable.UpdateJunctionTableDto jTableDto)
+    public async Task<IActionResult> UpdateIngredientAmount(int pizzaId, int ingredientId, Data.Dtos.JunctionTable.UpdateJunctionTableDto jTableDto)
     {
         var jTable = await FindJunctionTableAsync(pizzaId, ingredientId);
         if (jTable == null) return NotFound();
