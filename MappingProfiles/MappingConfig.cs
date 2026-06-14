@@ -14,10 +14,17 @@ public static class MappingConfig
 
         globalConfig.NewConfig<Pizza, ReadPizzaDto>()
             .Map(readDto => readDto.SizeId, pizza => (int) pizza.Size)
-            .Map(readDto => readDto.Ingredients, pizza => pizza.Ingredients.Select(i => i.Ingredient).ToList());
+            .Map(readDto => readDto.Ingredients, pizza => pizza.Ingredients.Select(i => MapIngredient(i)).ToList());
 
         globalConfig.NewConfig<Ingredient, ReadIngredientDto>()
             .Map(readDto => readDto.Pizzas, ingredient => ingredient.Pizzas.Select(i => i.Pizza).ToList());
+    }
+
+    private static ReadIngredientsForPizzaDto MapIngredient(JunctionTable jTable)
+    {
+        var dto = jTable.Ingredient.Adapt<ReadIngredientsForPizzaDto>()!;
+        dto.IngredientAmount = jTable.IngredientAmount;
+        return dto;
     }
 }
 
