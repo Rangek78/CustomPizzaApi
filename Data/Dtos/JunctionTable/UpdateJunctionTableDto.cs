@@ -4,7 +4,5 @@ namespace CustomPizzaApi.Data.Dtos.JunctionTable;
 public class UpdateJunctionTableDto
 {
     [Required]
-    public int PizzaId { get; set; }
-    [Required]
-    public int IngredientId { get; set; }
+    public uint IngredientAmount { get; set; }
 }

@@ -7,4 +7,5 @@ public class CreateJunctionTableDto
     public int PizzaId { get; set; }
     [Required]
     public int IngredientId { get; set; }
+    public uint IngredientAmount { get; set; } = 1;
 }
