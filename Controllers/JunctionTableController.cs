@@ -1,8 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using CustomPizzaApi.Models;
-using CustomPizzaApi.Data;
-using MapsterMapper;
+using CustomPizzaApi.Services;
 
 namespace CustomPizzaApi.Controllers;
 
@@ -10,104 +8,84 @@ namespace CustomPizzaApi.Controllers;
 [Route("api/[controller]")]
 public class JunctionTableController : ControllerBase
 {
-    private readonly PizzaContext _context;
-    private readonly IMapper _mapper;
+    private readonly JunctionTableService _jTableService;
 
-    public JunctionTableController(PizzaContext context, IMapper mapper)
+    public JunctionTableController(JunctionTableService jTableService)
     {
-        _context = context;
-        _mapper = mapper;
+        _jTableService= jTableService;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Data.Dtos.JunctionTable.ReadJunctionTableDto>>> GetIngredientsInPizzas()
     {
-        var jTable = await _context.IngredientInPizza.ToListAsync();
-        return Ok(_mapper.Map<List<Data.Dtos.JunctionTable.ReadJunctionTableDto>>(jTable));
+        var result = await _jTableService.GetIngredientsInPizzas();
+        return Ok(result);
     }
 
     [HttpGet("{pizzaId}/{ingredientId}")]
     public async Task<IActionResult> GetIngredientInPizza(int pizzaId, int ingredientId)
     {
-        var jTable = await FindJunctionTableAsync(pizzaId, ingredientId);
-        if (jTable == null) return NotFound();
+        var result = await _jTableService.GetIngredientInPizza(pizzaId, ingredientId);
+        if (result.IsFailed) return NotFound();
 
-        return Ok(_mapper.Map<Data.Dtos.JunctionTable.ReadJunctionTableDto>(jTable));
+        return Ok(result.Value);
     }
 
     [HttpPost]
     public async Task<ActionResult<JunctionTable>> AddIngredientInPizza(Data.Dtos.JunctionTable.CreateJunctionTableDto jTableDto)
     {
-        var jTable = _mapper.Map<JunctionTable>(jTableDto);
-        try
-        {
-            _context.IngredientInPizza.Add(jTable);
-        }
-        catch (InvalidOperationException)
-        {
-            return BadRequest();
-        }
-        await _context.SaveChangesAsync();
+        var result = await _jTableService.AddIngredientInPizza(jTableDto);
+        if (result.IsFailed) return BadRequest();
+        var jTable = result.Value;
 
-        return CreatedAtAction(nameof(GetIngredientInPizza), new { PizzaId = jTable.PizzaId, IngredientId = jTable.IngredientId }, jTableDto);
+        return CreatedAtAction(nameof(GetIngredientInPizza), new { PizzaId = jTable.PizzaId, IngredientId = jTable.IngredientId , IngredientAmount = jTable.IngredientAmount }, jTableDto);
     }
 
     [HttpPut("{pizzaId}/{ingredientId}")]
     public async Task<IActionResult> UpdateIngredientAmount(int pizzaId, int ingredientId, Data.Dtos.JunctionTable.UpdateJunctionTableDto jTableDto)
     {
-        var jTable = await FindJunctionTableAsync(pizzaId, ingredientId);
-        if (jTable == null) return NotFound();
+        var result = await _jTableService.UpdateIngredientAmount(pizzaId, ingredientId, jTableDto);
+        if (result.IsFailed) return NotFound();
 
-        _mapper.Map(jTableDto, jTable);
-        await _context.SaveChangesAsync();
         return NoContent();
     }
 
     [HttpPut("{pizzaId}/addIngredients")]
     public async Task<IActionResult> AddListOfIngredients(int pizzaId, [FromBody] IEnumerable<int> ingredientsIds)
     {
-        var pizza = await _context.Pizzas.FirstOrDefaultAsync(p => p.Id == pizzaId);
-        if (pizza == null) return NotFound();
-
-        Ingredient? ingr;
-        List<int> notFound = [];
-
-        foreach (var ingredientId in ingredientsIds)
+        var result = await _jTableService.AddListOfIngredients(pizzaId, ingredientsIds);
+        if (result.IsFailed)
         {
-            ingr = await FindIngredientAsync(ingredientId);
-            if (ingr == null)
-                notFound.Add(ingredientId);
+            if (result.HasError<NotFound<int>>(out var nfErrors))
+            {
+                var idsNotFound = new List<int>();
+                foreach (var error in nfErrors)
+                    idsNotFound.AddRange(error.Values);
 
-            if (notFound.Count == 0)
-                _context.IngredientInPizza.Add(new JunctionTable { IngredientId = ingredientId, PizzaId = pizzaId });
-        }
-        if (notFound.Count > 0)
-            return NotFound(notFound);
+                return NotFound(new { ingredientIdsNotFound = idsNotFound });
+            }
+            if (result.HasError<Conflict<int>>(out var cErrors))
+            {
+                var conflictingIds = new List<int>();
+                foreach (var error in cErrors)
+                    conflictingIds.AddRange(error.Values);
 
-        try { await _context.SaveChangesAsync(); }
-        catch (DbUpdateException ex)
-        {
-            var conflicts = ex.Entries.Select(e => (JunctionTable)e.Entity).Select(j => j.IngredientId).ToList();
-            return Conflict(conflicts);
+                return Conflict(new { conflictingIngredients = conflictingIds });
+            }
+            else            // has to be 'Pizza Id not found'
+                return NotFound(new { pizzaId = pizzaId });
         }
 
         return NoContent();
     }
 
-    private async Task<JunctionTable?> FindJunctionTableAsync(int pizzaId, int ingredientId)
+    [HttpDelete("{pizzaId}/{ingredientId}")]
+    public async Task<IActionResult> RemoveIngredientFromPizza(int pizzaId, int ingredientId)
     {
-        return await _context.IngredientInPizza.FirstOrDefaultAsync(j => j.PizzaId == pizzaId && j.IngredientId == ingredientId);
-    }
+        var result = await _jTableService.RemoveIngredientFromPizza(pizzaId, ingredientId);
 
-    private async Task<Pizza?> FindPizzaAsync(int pizzaId)
-    {
-        return await _context.Pizzas.FirstOrDefaultAsync(p => p.Id == pizzaId);
+        if (result.IsFailed) return NotFound();
+        return NoContent();
     }
-
-    private async Task<Ingredient?> FindIngredientAsync(int ingredientId)
-    {
-        return await _context.Ingredients.FirstOrDefaultAsync(i => i.Id == ingredientId);
-    }
-
 }
 
