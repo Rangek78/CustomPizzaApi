@@ -19,13 +19,9 @@ builder.Services.AddScoped<JunctionTableService>();
 
 // Lets enum value be converted to a string during JSON serialization
 builder.Services.AddControllers()
-.AddJsonOptions(opt=> {
-        opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-
-        // fixes unwanted behavior of a reference loop between
-        // pizza to ingredients and ingredients to pizza
+    .AddJsonOptions(opt=> {
         opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-        });
+    });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -48,3 +44,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program;
