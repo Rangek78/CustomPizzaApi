@@ -46,7 +46,7 @@ public class JunctionTableService
         {
             return Result.Fail(FailCause.BadRequest.ToString());
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException)           // foreign id(s) not found or relationship already exists
         {
             return Result.Fail(FailCause.BadRequest.ToString());
         }
@@ -68,7 +68,7 @@ public class JunctionTableService
     public async Task<Result> AddListOfIngredients(int pizzaId, [FromBody] IEnumerable<int> ingredientsIds)
     {
         var pizza = await _context.Pizzas.FirstOrDefaultAsync(p => p.Id == pizzaId);
-        if (pizza == null) return Result.Fail("Pizza not found");
+        if (pizza == null) return Result.Fail(FailCause.NotFound.ToString());
 
         Ingredient? ingr;
         CustomError<int> notFound = new NotFound<int>();
