@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CustomPizzaApi.Tests;
 
-public class PizzaControllerIntegrationTests : IClassFixture<PizzaWebApplicationFactory>, IAsyncLifetime
+public sealed class PizzaControllerIntegrationTests : IClassFixture<PizzaWebApplicationFactory>, IAsyncLifetime
 {
     private readonly PizzaWebApplicationFactory app;
 
