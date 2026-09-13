@@ -110,7 +110,7 @@ public sealed class PizzaControllerIntegrationTests : IClassFixture<PizzaWebAppl
         context.Ingredients.Add(ingredient);
         await context.SaveChangesAsync();
 
-        var jTable = new JunctionTable()
+        var jTable = new Models.JunctionTable()
         {
             PizzaId = pizza.Id,
             IngredientId = ingredient.Id,
