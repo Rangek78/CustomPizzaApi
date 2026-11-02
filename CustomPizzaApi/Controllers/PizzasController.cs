@@ -1,8 +1,7 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using CustomPizzaApi.Models;
-using CustomPizzaApi.Data;
-using MapsterMapper;
+using CustomPizzaApi.Services;
+using CustomPizzaApi.Data.Dtos.Pizza;
 
 namespace CustomPizzaApi.Controllers;
 
@@ -10,67 +9,53 @@ namespace CustomPizzaApi.Controllers;
 [Route("api/[controller]")]
 public class PizzasController : ControllerBase
 {
-    private readonly PizzaContext _context;
-    private readonly IMapper _mapper;
+    private readonly PizzaService _pizzaService;
 
-    public PizzasController(PizzaContext context, IMapper mapper)
+    public PizzasController(PizzaService pizzaService)
     {
-        _context = context;
-        _mapper = mapper;
+        _pizzaService = pizzaService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Data.Dtos.Pizza.ReadPizzaDto>>> GetPizzas()
+    public async Task<ActionResult<IEnumerable<ReadPizzaDto>>> GetPizzas()
     {
-        var pizzas = await _context.Pizzas.Include(p => p.Ingredients).ThenInclude(i => i.Ingredient).ToListAsync();
-        return Ok(_mapper.Map<List<Data.Dtos.Pizza.ReadPizzaDto>>(pizzas));
+        var result = await _pizzaService.GetPizzas();
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetPizza(int id)
     {
-        var pizza = await FindPizzaAsync(id);
-        if (pizza == null) return NotFound();
+        var result = await _pizzaService.GetPizza(id);
+        if (result.IsFailed) return NotFound();
 
-        return Ok(_mapper.Map<Data.Dtos.Pizza.ReadPizzaDto>(pizza));
+        return Ok(result.Value);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Pizza>> PostPizza(Pizza pizzaDto)
+    public async Task<ActionResult<Pizza>> PostPizza(CreatePizzaDto pizzaDto)
     {
-        _context.Pizzas.Add(pizzaDto);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetPizza), new { id = pizzaDto.Id }, pizzaDto);
+        var result = await _pizzaService.PostPizza(pizzaDto);
+        var createdPizza = result.Value;
+        return CreatedAtAction(nameof(GetPizza), new { id = createdPizza.Id }, createdPizza);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutPizza(int id, Data.Dtos.Pizza.UpdatePizzaDto pizzaDto)
+    public async Task<IActionResult> PutPizza(int id, UpdatePizzaDto pizzaDto)
     {
-        var pizza = await FindPizzaAsync(id);
-        if (pizza == null) return NotFound();
+        var result = await _pizzaService.PutPizza(id, pizzaDto);
+        if (result.IsFailed) return NotFound();
 
-        _mapper.Map(pizzaDto, pizza);
-        await _context.SaveChangesAsync();
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePizza(int id)
     {
-        var pizza = await FindPizzaAsync(id);
-        if (pizza == null) return NotFound();
+        var result = await _pizzaService.DeletePizza(id);
+        if (result.IsFailed) return NotFound();
 
-        _context.Pizzas.Remove(pizza);
-
-        await _context.SaveChangesAsync();
         return NoContent();
     }
-
-    private async Task<Pizza?> FindPizzaAsync(int id)
-    {
-        return await _context.Pizzas.Include(p => p.Ingredients).ThenInclude(i => i.Ingredient).FirstOrDefaultAsync(p => p.Id == id);
-    }
-
 }
 
