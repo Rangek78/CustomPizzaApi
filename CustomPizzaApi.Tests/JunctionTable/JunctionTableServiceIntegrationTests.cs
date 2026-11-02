@@ -29,7 +29,7 @@ public sealed partial class JunctionTableServiceIntegrationTests : IClassFixture
         return Task.CompletedTask;
     }
 
-    private (Pizza,Ingredient) GeneratePizzaAndIngredient()
+    private static (Pizza,Ingredient) GeneratePizzaAndIngredient()
     {
         var pizza = new Pizza
         {
@@ -46,7 +46,7 @@ public sealed partial class JunctionTableServiceIntegrationTests : IClassFixture
         return (pizza,ingredient);
     }
 
-    private Models.JunctionTable GenerateJunctionTable(int pizzaId, int ingredientId)
+    private static Models.JunctionTable GenerateJunctionTable(int pizzaId, int ingredientId)
     {
         return new Models.JunctionTable()
         {
