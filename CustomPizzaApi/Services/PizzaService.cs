@@ -18,14 +18,12 @@ public class PizzaService
         _mapper = mapper;
     }
 
-    [HttpGet]
     public async Task<IEnumerable<Data.Dtos.Pizza.ReadPizzaDto>> GetPizzas()
     {
         var pizzas = await _context.Pizzas.Include(p => p.Ingredients).ThenInclude(i => i.Ingredient).ToListAsync();
         return _mapper.Map<List<Data.Dtos.Pizza.ReadPizzaDto>>(pizzas);
     }
 
-    [HttpGet("{id}")]
     public async Task<Result<Data.Dtos.Pizza.ReadPizzaDto>> GetPizza(int id)
     {
         var pizza = await FindPizzaAsync(id);
@@ -34,7 +32,6 @@ public class PizzaService
         return Result.Ok(_mapper.Map<Data.Dtos.Pizza.ReadPizzaDto>(pizza));
     }
 
-    [HttpPost]
     public async Task<Result<Pizza>> PostPizza(Data.Dtos.Pizza.CreatePizzaDto pizzaDto)
     {
         var pizza = _mapper.Map<Pizza>(pizzaDto);
@@ -47,14 +44,13 @@ public class PizzaService
         {
             return Result.Fail(FailCause.BadRequest.ToString());
         }
-        catch (DbUpdateException)           // foreign id(s) not found
+        catch (DbUpdateException)           // catches unique constraints, truncation, check constraints, etc.
         {
             return Result.Fail(FailCause.BadRequest.ToString());
         }
         return Result.Ok(pizza);
     }
 
-    [HttpPut("{id}")]
     public async Task<Result> PutPizza(int id, Data.Dtos.Pizza.UpdatePizzaDto pizzaDto)
     {
         var pizza = await FindPizzaAsync(id);
@@ -65,7 +61,6 @@ public class PizzaService
         return Result.Ok();
     }
 
-    [HttpDelete("{id}")]
     public async Task<Result> DeletePizza(int id)
     {
         var pizza = await FindPizzaAsync(id);
