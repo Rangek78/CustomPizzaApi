@@ -36,7 +36,9 @@ public class PizzasController : ControllerBase
     public async Task<ActionResult<Pizza>> PostPizza(CreatePizzaDto pizzaDto)
     {
         var result = await _pizzaService.PostPizza(pizzaDto);
+        if (result.IsFailed) return BadRequest();
         var createdPizza = result.Value;
+
         return CreatedAtAction(nameof(GetPizza), new { id = createdPizza.Id }, createdPizza);
     }
 
