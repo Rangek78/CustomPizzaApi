@@ -181,6 +181,26 @@ public sealed class PizzaControllerIntegrationTests : IClassFixture<PizzaWebAppl
     }
 
     [Fact]
+    public async Task PostPizza_Returns400_WhenPizzaIsInvalid()
+    {
+        // Arrange
+        using var scope = app.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<PizzaContext>();
+        var pizza = new CreatePizzaDto
+        {
+            Name = null!,
+        };
+
+        var client = app.CreateClient();
+
+        // Act
+        var response = await client.PostAsJsonAsync($"api/pizzas/", pizza);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
     public async Task PutPizza_Returns204_WhenRequestIsSuccessful()
     {
         // Arrange

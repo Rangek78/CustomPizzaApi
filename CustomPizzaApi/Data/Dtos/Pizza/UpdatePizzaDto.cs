@@ -6,7 +6,7 @@ namespace CustomPizzaApi.Data.Dtos.Pizza;
 public class UpdatePizzaDto
 {
     [Required]
-    public string? Name { get; set; }
+    public required string Name { get; set; }
     [Required]
-    public PizzaSize Size { get; set; }
+    public required PizzaSize? Size { get; set; }
 }

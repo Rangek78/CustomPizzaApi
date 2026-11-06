@@ -16,6 +16,9 @@ public static class MappingConfig
             .Map(readDto => readDto.SizeId, pizza => (int) pizza.Size)
             .Map(readDto => readDto.Ingredients, pizza => pizza.Ingredients.Select(i => MapIngredient(i)).ToList());
 
+        globalConfig.NewConfig<UpdatePizzaDto, Pizza>()
+            .Map(pizza => pizza.Size, updateDto => updateDto.Size ?? ThrowinPizzaSize());
+
         globalConfig.NewConfig<Ingredient, ReadIngredientDto>()
             .Map(readDto => readDto.Pizzas, ingredient => ingredient.Pizzas.Select(i => i.Pizza).ToList());
     }
@@ -25,6 +28,11 @@ public static class MappingConfig
         var dto = jTable.Ingredient.Adapt<ReadIngredientsForPizzaDto>()!;
         dto.IngredientAmount = jTable.IngredientAmount;
         return dto;
+    }
+
+    private static PizzaSize? ThrowinPizzaSize()
+    {
+        throw new NullReferenceException("PizzaSize cannot be null");
     }
 }
 

@@ -16,6 +16,7 @@ builder.Services.AddMapster();
 builder.Services.RegisterMappings();
 
 builder.Services.AddScoped<JunctionTableService>();
+builder.Services.AddScoped<PizzaService>();
 
 // Lets enum value be converted to a string during JSON serialization
 builder.Services.AddControllers()
