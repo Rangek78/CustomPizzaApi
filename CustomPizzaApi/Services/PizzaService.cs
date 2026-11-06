@@ -56,8 +56,19 @@ public class PizzaService
         var pizza = await FindPizzaAsync(id);
         if (pizza == null) return Result.Fail(FailCause.NotFound.ToString());
 
-        _mapper.Map(pizzaDto, pizza);
-        await _context.SaveChangesAsync();
+        try
+        {
+            _mapper.Map(pizzaDto, pizza);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            return Result.Fail(FailCause.BadRequest.ToString());
+        }
+        catch (NullReferenceException)
+        {
+            return Result.Fail(FailCause.BadRequest.ToString());
+        }
         return Result.Ok();
     }
 
