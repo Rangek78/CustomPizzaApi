@@ -58,5 +58,11 @@ public sealed partial class PizzaServiceIntegrationTests
         // Assert
         Assert.True(result1.IsFailed);
         Assert.True(result2.IsFailed);
+
+        var error1 = Assert.Single(result1.Errors).Message;
+        var error2 = Assert.Single(result2.Errors).Message;
+
+        Assert.Equal(FailCause.BadRequest.ToString(), error1);
+        Assert.Equal(FailCause.BadRequest.ToString(), error2);
     }
 }
