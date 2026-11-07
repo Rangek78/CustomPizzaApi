@@ -3,8 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using CustomPizzaApi.Models;
 using CustomPizzaApi.Data.Dtos.Pizza;
-using FluentResults;
-using MapsterMapper;
 
 namespace CustomPizzaApi.Tests.PizzaService;
 
